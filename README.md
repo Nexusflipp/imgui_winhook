@@ -22,9 +22,9 @@ A more detailed list of features can be found below. Note that these are POCs (N
 
 ## Features Of The Backend
 
-*   Handle keyboard events and pass them to the event handler.
-*   Handle mouse events and pass them to the mouse event handler.
-*   Handle gamepad events through XInput and pass them to the event handler.
+*   Handle keyboard events and passes them to the event handler.
+*   Handle mouse events and passes them to the mouse event handler.
+*   Handle gamepad events through XInput and passes them to the event handler.
 *   Sanitize the keyboard input and send the sanitized input to the character input handler.
 *   The sanitizer detects shift and caps lock events and then returns as lower or upper case.
 *   The sanitizer detects numpad keys and converts them into ascii values, which will be also passed into the character input.
