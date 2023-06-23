@@ -1,3 +1,4 @@
+
  <p align="center"> 
     <a href="#" target="_blank"> <img alt="Lines of code" src="https://img.shields.io/tokei/lines/github/nexusflipp/imgui_winhook"> </a>
     <a href="#" target="_blank"> <img src="https://img.shields.io/github/issues/nexusflipp/imgui_winhook"/> </a>
@@ -9,7 +10,7 @@
 # IMGUI WINHOOK BACKEND
 
 This project is an alternative Windows platform backend for the Dear ImGui library.
-Inputs are handled through global low level windows hooks.
+Inputs are handled through global low level windows hooks. If you encounter any mouse lag please read: [Mouse Lag](#Mouse-Lag)
 
 This enables input handling for overlays and other windows that are not able to process messages through the WndProc callback (WS_EX_LAYERED).
 
@@ -31,6 +32,7 @@ A more detailed list of features can be found below. Note that these are POCs (N
 *   Detects changes in the target window and adapts to them. Window position, size and style.
 *   Stops handling input if the target window is not foreground.
 *   Calculates the mouse position, and adapts it to the target window.
+*   Can handle mouse events through a debug mouse handler to prevent mouse freezing: [More Information](#Mouse-Lag)
 
 
 ## Features Of The Example Target
@@ -60,10 +62,23 @@ A more detailed list of features can be found below. Note that these are POCs (N
 ## Important Notes
 
 *   Do not use this backend together with the normal ImGui Windows backend. This is a replacement for it!
-*	This is not compatible with all ImGui versions due to a drastic update of the key handler (Tested on v1.89.6).
+*   This is not compatible with all ImGui versions due to a drastic update of the key handler (Tested on v1.89.6).
 *   You may have to expand the input sanitizer to your liking.
 *   The IMGUI_IMPL_WINHOOK_DISABLE_GAMEPAD define can be used to disable XInput completely.
 *   XInput should not be handled like in the POC, more information about this can be found in the source code.
+
+
+## Mouse Lag
+
+I have received numerous messages from people asking why their mouse lags when debugging with this backend.
+
+This lag is entirely normal because these hooks are global. When you hit a breakpoint, the system is usually unable to capture any additional mouse events. The operating system detects this issue and removes our hook when it becomes too slow (in our case, when we hit a breakpoint). Consequently, the mouse starts to lag.
+
+**To facilitate debugging for users, I have implemented a debug mouse handler.** This handler utilizes GetCursorPos instead of messages.
+
+**The debug mouse handler is automatically enabled in debug mode. If you want to disable it in debug mode, use IMGUI_IMPL_WINHOOK_DISABLE_DEBUG_HANDLER. On the other hand, the debug mouse handler is automatically disabled in release mode. If you wish to enable it in release mode, use IMGUI_IMPL_WINHOOK_ENABLE_DEBUG_HANDLER.**
+
+Please note that the debug handler only manages mouse movement and left mouse button clicks.
 
 
 ## Credits

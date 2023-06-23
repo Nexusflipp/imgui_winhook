@@ -164,9 +164,6 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\README.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\imgui\backends\imgui_impl_dx9.h" />
     <ClInclude Include="..\..\imgui\imconfig.h" />
     <ClInclude Include="..\..\imgui\imgui.h" />

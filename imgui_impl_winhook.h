@@ -2,8 +2,21 @@
 #include <Windows.h>
 #include "imgui.h"      // IMGUI_IMPL_API
 
-// Configuration flags to add in your imconfig.h file:
-//#define IMGUI_IMPL_WINHOOK_DISABLE_GAMEPAD              // Disable gamepad support. This was meaningful before <1.81 but we now load XInput dynamically so the option is now less relevant.
+#ifndef _DEBUG
+#define _NDEBUG
+#endif
+
+//  Disable or enable debug mouse handler
+//	
+//	The debug mouse handler is automatically enabled in debug mode. To disable it in debug mode use IMGUI_IMPL_WINHOOK_DISABLE_DEBUG_HANDLER
+//	The debug mouse handler is automatically disabled in release mode. To enable it in release mode use IMGUI_IMPL_WINHOOK_ENABLE_DEBUG_HANDLER
+// 
+//#define IMGUI_IMPL_WINHOOK_DISABLE_DEBUG_HANDLER
+//#define IMGUI_IMPL_WINHOOK_ENABLE_DEBUG_HANDLER
+
+
+//  Disable gamepad support.
+//#define IMGUI_IMPL_WINHOOK_DISABLE_GAMEPAD
 
 // Using XInput for gamepad (will load DLL dynamically)
 #ifndef IMGUI_IMPL_WINHOOK_DISABLE_GAMEPAD
@@ -23,7 +36,12 @@ struct ImGui_ImplWinHook_Data
 	bool                bTargetForeground;
 	bool				bTargetChanged;
 
+#if !defined(IMGUI_IMPL_WINHOOK_ENABLE_DEBUG_HANDLER) && (defined(_NDEBUG) || defined(IMGUI_IMPL_WINHOOK_DISABLE_DEBUG_HANDLER))
 	HHOOK				MouseHook;
+#else
+	POINT				CursorPos;
+#endif
+
 	HHOOK				KeyboardHook;
 
 	INT64				Time;

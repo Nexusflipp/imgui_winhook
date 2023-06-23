@@ -231,6 +231,8 @@ static void ImGui_ImplWinHook_ProcessKeyEventsWorkarounds()
         ImGui_ImplWinHook_AddKeyEvent(ImGuiKey_RightSuper, false, VK_RWIN);
 }
 
+#if !defined(IMGUI_IMPL_WINHOOK_ENABLE_DEBUG_HANDLER) && (defined(_NDEBUG) || defined(IMGUI_IMPL_WINHOOK_DISABLE_DEBUG_HANDLER))
+
 LRESULT hkLowLvlMouse(int nCode, WPARAM wParam, LPARAM lParam)
 {
     ImGui_ImplWinHook_Data* Bd  = ImGui_ImplWinHook_GetBackendData();
@@ -316,6 +318,8 @@ LRESULT hkLowLvlMouse(int nCode, WPARAM wParam, LPARAM lParam)
 
     return CallNextHookEx(Bd->MouseHook, nCode, wParam, lParam);
 }
+
+#endif
 
 LRESULT hkLowLvlKeyboard(int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -419,8 +423,12 @@ IMGUI_IMPL_API bool ImGui_ImplWinHook_Init(void* OwnWnd, void* TargetWnd)
 	Bd->TicksPerSecond  = PerfFrequency;
 	Bd->Time            = PerfCounter;
 
+#if !defined(IMGUI_IMPL_WINHOOK_ENABLE_DEBUG_HANDLER) && (defined(_NDEBUG) || defined(IMGUI_IMPL_WINHOOK_DISABLE_DEBUG_HANDLER))
+
     Bd->MouseHook       = SetWindowsHookExA(WH_MOUSE_LL, hkLowLvlMouse, nullptr, 0);
     IM_ASSERT(Bd->MouseHook != NULL && "Mouse hook failed!");
+
+#endif
 
     Bd->KeyboardHook    = SetWindowsHookExA(WH_KEYBOARD_LL, hkLowLvlKeyboard, nullptr, 0);
     IM_ASSERT(Bd->KeyboardHook != NULL && "Keyboard hook failed!");
@@ -459,7 +467,10 @@ IMGUI_IMPL_API void ImGui_ImplWinHook_Shutdown()
 	IM_ASSERT(Bd != nullptr && "No platform backend to shutdown, or already shutdown?");
 	ImGuiIO& Io = ImGui::GetIO();
 
+#if !defined(IMGUI_IMPL_WINHOOK_ENABLE_DEBUG_HANDLER) && (defined(_NDEBUG) || defined(IMGUI_IMPL_WINHOOK_DISABLE_DEBUG_HANDLER))
     UnhookWindowsHookEx(Bd->MouseHook);
+#endif
+
     UnhookWindowsHookEx(Bd->KeyboardHook);
 
         //  Unload XInput library
@@ -510,6 +521,20 @@ IMGUI_IMPL_API void ImGui_ImplWinHook_NewFrame()
 
         Bd->bTargetChanged          = true;
     }
+
+#if (defined(IMGUI_IMPL_WINHOOK_ENABLE_DEBUG_HANDLER) || defined(_DEBUG)) && !defined(IMGUI_IMPL_WINHOOK_DISABLE_DEBUG_HANDLER)
+
+    GetCursorPos(&Bd->CursorPos);
+
+    Io.MousePos.x = STATICCA<float>(Bd->CursorPos.x - Bd->TargetClientToScreen.x);
+    Io.MousePos.y = STATICCA<float>(Bd->CursorPos.y - Bd->TargetClientToScreen.y);
+
+    if (GetAsyncKeyState(VK_LBUTTON))
+        Io.AddMouseButtonEvent(0, true);
+    else
+        Io.AddMouseButtonEvent(0, false);
+
+#endif
 
     // Setup time step
     INT64 CurrTime  = 0;
