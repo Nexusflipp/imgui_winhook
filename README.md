@@ -76,7 +76,9 @@ This lag is entirely normal because these hooks are global. When you hit a break
 
 **To facilitate debugging for users, I have implemented a debug mouse handler.** This handler utilizes GetCursorPos instead of messages.
 
-**The debug mouse handler is automatically enabled in debug mode. If you want to disable it in debug mode, use IMGUI_IMPL_WINHOOK_DISABLE_DEBUG_HANDLER. On the other hand, the debug mouse handler is automatically disabled in release mode. If you wish to enable it in release mode, use IMGUI_IMPL_WINHOOK_ENABLE_DEBUG_HANDLER.**
+**The debug mouse handler is automatically enabled in debug mode. If you want to disable it in debug mode, use IMGUI_IMPL_WINHOOK_DISABLE_DEBUG_HANDLER.** 
+
+**On the other hand, the debug mouse handler is automatically disabled in release mode. If you wish to enable it in release mode, use IMGUI_IMPL_WINHOOK_ENABLE_DEBUG_HANDLER.**
 
 Please note that the debug handler only manages mouse movement and left mouse button clicks.
 
